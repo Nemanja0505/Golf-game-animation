@@ -170,8 +170,6 @@ namespace AssimpSample
         public void Draw(OpenGL gl)
         {
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-
-
             gl.FrontFace(OpenGL.GL_CCW);
 
             gl.PushMatrix();
@@ -180,17 +178,13 @@ namespace AssimpSample
             gl.Scale(0.5, 0.5, 0.5);
             gl.Rotate(m_xRotation, 1.0f, 0.0f, 0.0f);
             gl.Rotate(m_yRotation, 0.0f, 1.0f, 0.0f);
-            //gl.Rotate(-60f, 1f, 0f, 0f);
-
-            Teren(gl);
-            GolfPalica(gl);
-
+            Ground(gl);
+            Golf_Club(gl);
 
             gl.PopMatrix();
 
             drawText(gl);
 
-            // Oznaci kraj iscrtavanja
             gl.Flush();
         }
 
@@ -205,11 +199,11 @@ namespace AssimpSample
             m_width = width;
             m_height = height;
             gl.Viewport(0,0,m_width,m_height);
-            gl.MatrixMode(OpenGL.GL_PROJECTION);      // selektuj Projection Matrix
+            gl.MatrixMode(OpenGL.GL_PROJECTION);      
             gl.LoadIdentity();
             gl.Perspective(45f, (double)width / height, 0.5f, 200f);
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
-            gl.LoadIdentity();                // resetuj ModelView Matrix
+            gl.LoadIdentity();              
         }
 
         /// <summary>
@@ -239,9 +233,9 @@ namespace AssimpSample
         #endregion IDisposable metode
 
 
-        #region scene
+        #region scens
 
-        private void Teren(OpenGL gl) {
+        private void Ground(OpenGL gl) {
 
             gl.PushMatrix();
 
@@ -253,14 +247,14 @@ namespace AssimpSample
             gl.Vertex(15.0f, 8.0f);
             gl.End();
 
-            Rupa(gl);
-            Sipka(gl);
-            Loptica(gl);
+            Hole(gl);
+            Bulk(gl);
+            Ball(gl);
 
             gl.PopMatrix();
         }
 
-        private void Rupa(OpenGL gl) {
+        private void Hole(OpenGL gl) {
 
             gl.PushMatrix();
             gl.Color(0f, 0f, 0f);
@@ -274,7 +268,7 @@ namespace AssimpSample
             gl.PopMatrix();
         }
 
-        private void Sipka(OpenGL gl) {
+        private void Bulk(OpenGL gl) {
 
             gl.PushMatrix();
             gl.Translate(0.4f, 0f, 0.02f);
@@ -287,12 +281,12 @@ namespace AssimpSample
             cil.CreateInContext(gl);
             cil.Render(gl,RenderMode.Render);
 
-            Zastavica(gl);
+            Flag(gl);
            
             gl.PopMatrix();
         }
 
-        private void Zastavica(OpenGL gl) {
+        private void Flag(OpenGL gl) {
             
             gl.PushMatrix();
             gl.Color(0.8f, 0.2f, 0.3f);
@@ -305,7 +299,7 @@ namespace AssimpSample
 
         }
 
-        private void Loptica(OpenGL gl) {
+        private void Ball(OpenGL gl) {
             
             gl.PushMatrix();
             gl.Color(0.8f, 0.8f, 0.1f);
@@ -319,7 +313,7 @@ namespace AssimpSample
 
         }
 
-        private void GolfPalica(OpenGL gl)
+        private void Golf_Club(OpenGL gl)
         {
             gl.PushMatrix();
 
@@ -334,19 +328,43 @@ namespace AssimpSample
         public void drawText(OpenGL gl)
         {
 
-            gl.Viewport(0, 0, m_width, m_height);
+            gl.Viewport(m_width/2, 0, m_width/2, m_height/2);
 
+            gl.Color(1f, 0.0f, 0.0f);
             gl.MatrixMode(OpenGL.GL_PROJECTION);
             gl.LoadIdentity();
             gl.Ortho2D(-10f, 10f, -10f, 10f);
-            gl.Translate(-9.0f, 9f, 0.0f);
 
-            gl.DrawText3D("Arial", 25f, 1f, 0.1f, "teapot");
+            gl.PushMatrix();
+            gl.Translate(-10.0f, 9f, 0.0f);
+            gl.DrawText3D("Tahoma", 10f, 0.2f, 0.1f, "Predmet: Racunarska grafika");
+            gl.PopMatrix();
+
+            gl.PushMatrix();
+            gl.Translate(-10.0f, 8f, 0.0f);
+            gl.DrawText3D("Tahoma", 10f, 0.2f, 0.1f, "Sk.god: 2020/21");
+            gl.PopMatrix();
+
+            gl.PushMatrix();
+            gl.Translate(-10.0f, 7f, 0.0f);
+            gl.DrawText3D("Tahoma", 10f, 0.2f, 0.1f, "Ime: Nemanja");
+            gl.PopMatrix();
+
+            gl.PushMatrix();
+            gl.Translate(-10.0f, 6f, 0.0f);
+            gl.DrawText3D("Tahoma", 10f, 0.2f, 0.1f, "Prezime:Jevtic");
+            gl.PopMatrix();
+
+            gl.PushMatrix();
+            gl.Translate(-10.0f, 5f, 0.0f);
+            gl.DrawText3D("Tahoma", 10f, 0.2f, 0.1f, "Sifra zad: 15.2");
+            gl.PopMatrix();
+
 
             gl.MatrixMode(OpenGL.GL_PROJECTION);
             gl.LoadIdentity();
             gl.Perspective(50.0, m_width / (double)m_height, 0.5, 200.0);
-            // Sacuvaj stanje modelview matrice i primeni transformacije
+            
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
            
 
