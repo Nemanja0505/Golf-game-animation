@@ -114,6 +114,7 @@ namespace AssimpSample
                         }
                     }
                     break;
+                case Key.O: m_world.ChangeShadeModel(openGLControl.OpenGL); break;
             }
         }
     }

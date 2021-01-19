@@ -14,6 +14,7 @@ using SharpGL.SceneGraph.Primitives;
 using SharpGL.SceneGraph.Quadrics;
 using SharpGL.SceneGraph.Core;
 using SharpGL;
+using SharpGL.Enumerations;
 
 namespace AssimpSample
 {
@@ -25,16 +26,6 @@ namespace AssimpSample
     public class World : IDisposable
     {
         #region Atributi
-
-        /// <summary>
-        ///	 Ugao rotacije Meseca
-        /// </summary>
-        private float m_moonRotation = 0.0f;
-
-        /// <summary>
-        ///	 Ugao rotacije Zemlje
-        /// </summary>
-        private float m_earthRotation = 0.0f;
 
         /// <summary>
         ///	 Scena koja se prikazuje.
@@ -65,6 +56,11 @@ namespace AssimpSample
         ///	 Visina OpenGL kontrole u pikselima.
         /// </summary>
         private int m_height;
+
+        /// <summary>
+        ///	 Shade model 
+        /// </summary>
+        private ShadeModel m_selectedModel;
 
         #endregion Atributi
 
@@ -155,11 +151,15 @@ namespace AssimpSample
         /// </summary>
         public void Initialize(OpenGL gl)
         {
-            gl.ClearColor(0.0f, 0.5f, 1.0f, 1.0f);
-            //gl.Color(1f, 0f, 0f);
-            // Model sencenja na flat (konstantno)
+
             gl.Enable(OpenGL.GL_CULL_FACE);
             gl.Enable(OpenGL.GL_DEPTH_TEST);
+
+            gl.Enable(OpenGL.GL_COLOR_MATERIAL);
+            gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);
+            
+            gl.ClearColor(0.0f, 0.5f, 1.0f, 1.0f);
+
             m_scene.LoadScene();
             m_scene.Initialize();
         }
@@ -171,6 +171,8 @@ namespace AssimpSample
         {
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.FrontFace(OpenGL.GL_CCW);
+
+
 
             gl.PushMatrix();
 
@@ -187,9 +189,6 @@ namespace AssimpSample
 
             gl.Flush();
         }
-
-
-
 
         /// <summary>
         /// Podesava viewport i projekciju za OpenGL kontrolu.
@@ -231,7 +230,6 @@ namespace AssimpSample
         }
 
         #endregion IDisposable metode
-
 
         #region scens
 
@@ -328,35 +326,35 @@ namespace AssimpSample
         public void drawText(OpenGL gl)
         {
 
-            gl.Viewport(m_width/2, 0, m_width/2, m_height/2);
+            //gl.Viewport(m_width/2, 0, m_width/2, m_height/2);
 
             gl.Color(1f, 0.0f, 0.0f);
             gl.MatrixMode(OpenGL.GL_PROJECTION);
             gl.LoadIdentity();
-            gl.Ortho2D(-10f, 10f, -10f, 10f);
+            gl.Ortho2D(-17f, 17f, -17f, 17f);
 
             gl.PushMatrix();
-            gl.Translate(-10.0f, 9f, 0.0f);
+            gl.Translate(-16f, 14f, 0.0f);
             gl.DrawText3D("Tahoma", 10f, 0.2f, 0.1f, "Predmet: Racunarska grafika");
             gl.PopMatrix();
 
             gl.PushMatrix();
-            gl.Translate(-10.0f, 8f, 0.0f);
+            gl.Translate(-16f, 13f, 0.0f);
             gl.DrawText3D("Tahoma", 10f, 0.2f, 0.1f, "Sk.god: 2020/21");
             gl.PopMatrix();
 
             gl.PushMatrix();
-            gl.Translate(-10.0f, 7f, 0.0f);
+            gl.Translate(-16f, 12f, 0.0f);
             gl.DrawText3D("Tahoma", 10f, 0.2f, 0.1f, "Ime: Nemanja");
             gl.PopMatrix();
 
             gl.PushMatrix();
-            gl.Translate(-10.0f, 6f, 0.0f);
+            gl.Translate(-16f, 11f, 0.0f);
             gl.DrawText3D("Tahoma", 10f, 0.2f, 0.1f, "Prezime:Jevtic");
             gl.PopMatrix();
 
             gl.PushMatrix();
-            gl.Translate(-10.0f, 5f, 0.0f);
+            gl.Translate(-16f, 10f, 0.0f);
             gl.DrawText3D("Tahoma", 10f, 0.2f, 0.1f, "Sifra zad: 15.2");
             gl.PopMatrix();
 
@@ -371,6 +369,23 @@ namespace AssimpSample
         }
 
 
+        #endregion
+
+
+        #region Change shade model (Flat or Smooth)
+        public void ChangeShadeModel(OpenGL gl)
+        {
+            if (m_selectedModel == ShadeModel.Flat)
+            {
+                gl.ShadeModel(ShadeModel.Smooth);
+                m_selectedModel = ShadeModel.Smooth;
+            }
+            else
+            {
+                gl.ShadeModel(ShadeModel.Flat);
+                m_selectedModel = ShadeModel.Flat;
+            }
+        }
         #endregion
 
 
