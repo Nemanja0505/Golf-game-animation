@@ -154,14 +154,37 @@ namespace AssimpSample
 
             gl.Enable(OpenGL.GL_CULL_FACE);
             gl.Enable(OpenGL.GL_DEPTH_TEST);
-
-            gl.Enable(OpenGL.GL_COLOR_MATERIAL);
-            gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);
-            
-            gl.ClearColor(0.0f, 0.5f, 1.0f, 1.0f);
-
+            SetupLighting(gl);
             m_scene.LoadScene();
             m_scene.Initialize();
+        }
+
+        private void SetupLighting(OpenGL gl)
+        {
+            //color tracking mehanizam
+            gl.Enable(OpenGL.GL_COLOR_MATERIAL);
+            gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);
+            gl.ClearColor(0.0f, 0.5f, 1.0f, 1.0f);
+            //definisanje normale 
+            gl.Enable(OpenGL.GL_NORMALIZE);
+            gl.Enable(OpenGL.GL_AUTO_NORMAL);
+            //shade model 
+            gl.ShadeModel(OpenGL.GL_SMOOTH);
+
+            //tackasti izvor svetlosti stacionaran na y-osi iznad podloge
+            float[] light0pos = new float[] { 0.0f, 10.0f, 0.0f, 1.0f };
+            float[] light0ambient = new float[] { 0.5f, 0.5f, 0.5f, 1f };
+            float[] light0diffuse = new float[] { 0.3f, 0.3f, 0.3f, 1.0f };
+
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, light0pos);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_AMBIENT, light0ambient);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, light0diffuse);
+
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPOT_CUTOFF, 180.0f);
+
+            gl.Enable(OpenGL.GL_LIGHTING);
+            gl.Enable(OpenGL.GL_LIGHT0);
+
         }
 
         /// <summary>
@@ -180,6 +203,7 @@ namespace AssimpSample
             gl.Scale(0.5, 0.5, 0.5);
             gl.Rotate(m_xRotation, 1.0f, 0.0f, 0.0f);
             gl.Rotate(m_yRotation, 0.0f, 1.0f, 0.0f);
+
             Ground(gl);
             Golf_Club(gl);
 
@@ -239,6 +263,7 @@ namespace AssimpSample
 
             gl.Color(0.45f, 0.6f, 0.35f);
             gl.Begin(OpenGL.GL_QUADS);
+            gl.Normal(0.0f, -1.0f, 0.0f);
             gl.Vertex(-15.0f, 8.0f);
             gl.Vertex(-50.0f, -25.0f);
             gl.Vertex(50f, -25.0f);
