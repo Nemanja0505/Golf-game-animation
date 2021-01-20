@@ -88,32 +88,46 @@ namespace AssimpSample
         {
             switch (e.Key)
             {
-                case Key.F10: this.Close(); break;
-                case Key.W: m_world.RotationX -= 5.0f; break;
-                case Key.S: m_world.RotationX += 5.0f; break;
-                case Key.A: m_world.RotationY -= 5.0f; break;
-                case Key.D: m_world.RotationY += 5.0f; break;
-                case Key.P: m_world.SceneDistance += 10.0f; break;
-                case Key.M: m_world.SceneDistance -= 10.0f; break;
-                case Key.F2:
-                    OpenFileDialog opfModel = new OpenFileDialog();
-                    bool result = (bool) opfModel.ShowDialog();
-                    if (result)
+                case Key.F2: this.Close(); break;
+                case Key.F:
+                    if (m_world.RotationX - 5 >= -35)
                     {
-
-                        try
-                        {
-                            World newWorld = new World(Directory.GetParent(opfModel.FileName).ToString(), Path.GetFileName(opfModel.FileName), (int)openGLControl.Width, (int)openGLControl.Height, openGLControl.OpenGL);
-                            m_world.Dispose();
-                            m_world = newWorld;
-                            m_world.Initialize(openGLControl.OpenGL);
-                        }
-                        catch (Exception exp)
-                        {
-                            MessageBox.Show("Neuspesno kreirana instanca OpenGL sveta:\n" + exp.Message, "GRESKA", MessageBoxButton.OK );
-                        }
+                        m_world.RotationX -= 5.0f;
+                    }
+                    else {
+                        m_world.RotationX = m_world.RotationX;
+                    }
+                     break;
+                case Key.S:
+                    if (m_world.RotationX + 5 <= 15)
+                    {
+                        m_world.RotationX += 5.0f;
+                    }
+                    else
+                    {
+                        m_world.RotationX = m_world.RotationX;
                     }
                     break;
+                case Key.E:
+                    if (m_world.RotationY - 5 >= -45)
+                    {
+                        m_world.RotationY -= 5.0f;
+                    }
+                    else {
+                        m_world.RotationY = m_world.RotationY;
+                    }
+                     break;
+                case Key.D:
+                    if (m_world.RotationY + 5 <= 45)
+                    {
+                        m_world.RotationY += 5.0f;
+                    }
+                    else {
+                        m_world.RotationY = m_world.RotationY;
+                    }
+                     break;
+                case Key.OemPlus: m_world.SceneDistance -= 5.0f; break;
+                case Key.OemMinus: m_world.SceneDistance += 5.0f; break;
                 case Key.O: m_world.ChangeShadeModel(openGLControl.OpenGL); break;
             }
         }

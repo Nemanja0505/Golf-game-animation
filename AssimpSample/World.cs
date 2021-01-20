@@ -172,7 +172,7 @@ namespace AssimpSample
             gl.ShadeModel(OpenGL.GL_SMOOTH);
 
             //tackasti izvor svetlosti stacionaran na y-osi iznad podloge
-            float[] light0pos = new float[] { 0.0f, 10.0f, 0.0f, 1.0f };
+            float[] light0pos = new float[] { 0.0f, 5.0f, 0.0f, 1.0f };
             float[] light0ambient = new float[] { 0.5f, 0.5f, 0.5f, 1f };
             float[] light0diffuse = new float[] { 0.3f, 0.3f, 0.3f, 1.0f };
 
@@ -195,12 +195,11 @@ namespace AssimpSample
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.FrontFace(OpenGL.GL_CCW);
 
-
-
             gl.PushMatrix();
 
             gl.Translate(0.0f, 0.0f, -m_sceneDistance*1.3);
             gl.Scale(0.5, 0.5, 0.5);
+            gl.Rotate(-40f,0f,0f);
             gl.Rotate(m_xRotation, 1.0f, 0.0f, 0.0f);
             gl.Rotate(m_yRotation, 0.0f, 1.0f, 0.0f);
 
@@ -283,8 +282,9 @@ namespace AssimpSample
             gl.Color(0f, 0f, 0f);
             gl.Translate(0f, 0.0f, 0.015f);
             Disk disk = new Disk();
-            disk.Loops = 50;
-            disk.Slices = 50;
+            disk.NormalGeneration = Normals.Smooth;
+            disk.Loops = 300;
+            disk.Slices = 300;
             disk.OuterRadius = 0.7f;
             disk.CreateInContext(gl);
             disk.Render(gl, RenderMode.Render);
@@ -296,11 +296,14 @@ namespace AssimpSample
             gl.PushMatrix();
             gl.Translate(0.4f, 0f, 0.02f);
             gl.Color(1f, 1f, 1f);
-            gl.Rotate(-30f, 0f, 0f);
+            //gl.Rotate(-30f, 0f, 0f);
             Cylinder cil = new Cylinder();
+            cil.NormalGeneration = Normals.Smooth;
             cil.BaseRadius = 0.2f;
             cil.TopRadius = 0.2f;
             cil.Height = 15f;
+            cil.Stacks = 300;
+            cil.Slices = 300;
             cil.CreateInContext(gl);
             cil.Render(gl,RenderMode.Render);
 
@@ -330,6 +333,9 @@ namespace AssimpSample
             gl.Rotate(90f, 0f, 0f);
             gl.Scale(0.5f, 0.5f, 0.5f);
             Sphere sp = new Sphere();
+            sp.NormalGeneration = Normals.Smooth;
+            sp.Slices = 300;
+            sp.Stacks = 300;
             sp.CreateInContext(gl);
             sp.Render(gl,RenderMode.Render);
             gl.PopMatrix();
