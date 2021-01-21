@@ -86,50 +86,56 @@ namespace AssimpSample
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.Key)
+            if (!m_world.StartAnimation)
             {
-                case Key.F2: this.Close(); break;
-                case Key.E:
-                    if (m_world.RotationX - 5 >= -10)
-                    {
-                        m_world.RotationX -= 5.0f;
-                    }
-                    else {
-                        m_world.RotationX = m_world.RotationX;
-                    }
-                     break;
-                case Key.D:
-                    if (m_world.RotationX + 5 <= 60)
-                    {
-                        m_world.RotationX += 5.0f;
-                    }
-                    else
-                    {
-                        m_world.RotationX = m_world.RotationX;
-                    }
-                    break;
-                case Key.F:
-                    if (m_world.RotationY - 5 >= -35)
-                    {
-                        m_world.RotationY -= 5.0f;
-                    }
-                    else {
-                        m_world.RotationY = m_world.RotationY;
-                    }
-                     break;
-                case Key.S:
-                    if (m_world.RotationY + 5 <= 35)
-                    {
-                        m_world.RotationY += 5.0f;
-                    }
-                    else {
-                        m_world.RotationY = m_world.RotationY;
-                    }
-                     break;
-                case Key.OemPlus: m_world.SceneDistance -= 5.0f; break;
-                case Key.OemMinus: m_world.SceneDistance += 5.0f; break;
-                case Key.V: m_world.RestartAnimation(); break;
-                case Key.O: m_world.ChangeShadeModel(openGLControl.OpenGL); break;
+                switch (e.Key)
+                {
+                    case Key.F2: this.Close(); break;
+                    case Key.E:
+                        if (m_world.RotationX - 5 >= -10)
+                        {
+                            m_world.RotationX -= 5.0f;
+                        }
+                        else
+                        {
+                            m_world.RotationX = m_world.RotationX;
+                        }
+                        break;
+                    case Key.D:
+                        if (m_world.RotationX + 5 <= 60)
+                        {
+                            m_world.RotationX += 5.0f;
+                        }
+                        else
+                        {
+                            m_world.RotationX = m_world.RotationX;
+                        }
+                        break;
+                    case Key.F:
+                        if (m_world.RotationY - 5 >= -35)
+                        {
+                            m_world.RotationY -= 5.0f;
+                        }
+                        else
+                        {
+                            m_world.RotationY = m_world.RotationY;
+                        }
+                        break;
+                    case Key.S:
+                        if (m_world.RotationY + 5 <= 35)
+                        {
+                            m_world.RotationY += 5.0f;
+                        }
+                        else
+                        {
+                            m_world.RotationY = m_world.RotationY;
+                        }
+                        break;
+                    case Key.OemPlus: m_world.SceneDistance -= 5.0f; break;
+                    case Key.OemMinus: m_world.SceneDistance += 5.0f; break;
+                    case Key.V: m_world.RestartAnimation(); break;
+                    case Key.O: m_world.ChangeShadeModel(openGLControl.OpenGL); break;
+                }
             }
         }
     }
