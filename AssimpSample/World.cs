@@ -16,6 +16,7 @@ using SharpGL.SceneGraph.Core;
 using SharpGL;
 using SharpGL.Enumerations;
 using System.Windows.Threading;
+using System.Threading;
 
 namespace AssimpSample
 {
@@ -69,6 +70,7 @@ namespace AssimpSample
         #region Atributi za animaciju
         private DispatcherTimer timerBall;
         private DispatcherTimer timerGolf_Club;
+        private bool startAnimation = false;
 
         private float[] positionBall = { -13f, -10f, 0.5f };
         private float[] positionGolf_Club = { -14f, -10f, 0.2f };
@@ -78,6 +80,25 @@ namespace AssimpSample
 
         #endregion
 
+        #region Restartvanje atributa
+        public void RestartAnimation() {
+            if (!startAnimation)
+            {
+                startAnimation = true;
+                positionBall = new float[] { -13f, -10f, 0.5f };
+            }
+            else {
+                //Thread.Sleep(2000);
+                startAnimation = false;
+                positionGolf_Club = new float[] { -14f, -10f, 0.2f };
+                rotationGolf_Club = new float[] { 0f, 0f, -60f };
+                Golf_Club_Up = false;
+                Golf_Club_Down = false;
+            }
+        }
+
+
+        #endregion
 
         #region Properties
 
@@ -187,45 +208,50 @@ namespace AssimpSample
 
         private void BallAnimation(object sender, EventArgs e)
         {
-            if (positionBall[0] + 0.4 < 0 && Golf_Club_Down) {
+            if (startAnimation) {
+                if (positionBall[0] + 0.4 < 0 && Golf_Club_Down)
+                {
                     positionBall[0] += 0.4f;
                     positionBall[1] += 0.3f;
-            }
-            if (positionBall[0] + 0.4 > 0 && Golf_Club_Down)
-            {
-                positionBall[2] = -1f;
+                }
+                if (positionBall[0] + 0.4 > 0 && Golf_Club_Down)
+                {
+                    positionBall[2] = -1f;
+                    RestartAnimation();
+                }
             }
 
         }
 
         private void Golf_Club_Animation(object sender, EventArgs e)
         {
-            if (!Golf_Club_Up)
-            {
-                positionGolf_Club[0] -= 3;
-                positionGolf_Club[1] -= 3.5f;
-                positionGolf_Club[2] += 1.4f;
-                rotationGolf_Club[1] += 10;
-                if (positionGolf_Club[0] == -20)
+            if (startAnimation) {
+                if (!Golf_Club_Up)
                 {
-                    Golf_Club_Up = true;
+                    positionGolf_Club[0] -= 3;
+                    positionGolf_Club[1] -= 3.5f;
+                    positionGolf_Club[2] += 1.4f;
+                    rotationGolf_Club[1] += 10;
+                    if (positionGolf_Club[0] == -23)
+                    {
+                        Golf_Club_Up = true;
+                    }
+                }
+                else
+                {
+                    if (!Golf_Club_Down)
+                    {
+                        positionGolf_Club[0] += 3;
+                        positionGolf_Club[1] += 3.5f;
+                        positionGolf_Club[2] -= 1.4f;
+                        rotationGolf_Club[1] -= 10;
+                    }
+                    if (positionGolf_Club[0] == -14)
+                    {
+                        Golf_Club_Down = true;
+                    }
                 }
             }
-            else{
-                if (!Golf_Club_Down)
-                {
-                    positionGolf_Club[0] += 3;
-                    positionGolf_Club[1] += 3.5f;
-                    positionGolf_Club[2] -= 1.4f;
-                    rotationGolf_Club[1] -= 10;
-                }
-                if (positionGolf_Club[0] == -14)
-                {
-                    Golf_Club_Down = true;
-                }
-            }
-            
-
         }
 
         private void SetupLighting(OpenGL gl)
@@ -276,7 +302,7 @@ namespace AssimpSample
 
             //Pitati vezano za LookAt da li se odnosi na to da gleda direktno iznad rupe 
             //gl.LookAt(0, 20, -40, 0, 0, -40, 0, 0, -1);
-            gl.Translate(0.0f, -7f, -m_sceneDistance*1.3);
+            gl.Translate(0.0f, -7f, -m_sceneDistance*1.2);
             gl.Scale(0.5, 0.5, 0.5);
             gl.Rotate(-90f,0f,0f);
             gl.Rotate(m_xRotation, 1.0f, 0.0f, 0.0f);
