@@ -15,6 +15,7 @@ using SharpGL.SceneGraph.Quadrics;
 using SharpGL.SceneGraph.Core;
 using SharpGL;
 using SharpGL.Enumerations;
+using System.Windows.Threading;
 
 namespace AssimpSample
 {
@@ -62,7 +63,21 @@ namespace AssimpSample
         /// </summary>
         private ShadeModel m_selectedModel;
 
+
         #endregion Atributi
+
+        #region Atributi za animaciju
+        private DispatcherTimer timerBall;
+        private DispatcherTimer timerGolf_Club;
+
+        private float[] positionBall = { -13f, -10f, 0.5f };
+        private float[] positionGolf_Club = { -14f, -10f, 0.2f };
+        private float[] rotationGolf_Club = { 0f, 0f, -60f };
+        private bool Golf_Club_Up = false;
+        private bool Golf_Club_Down = false;
+
+        #endregion
+
 
         #region Properties
 
@@ -151,12 +166,66 @@ namespace AssimpSample
         /// </summary>
         public void Initialize(OpenGL gl)
         {
-
             gl.Enable(OpenGL.GL_CULL_FACE);
             gl.Enable(OpenGL.GL_DEPTH_TEST);
             SetupLighting(gl);
+            
+            timerBall = new DispatcherTimer();
+            timerBall.Interval = TimeSpan.FromMilliseconds(200);
+            timerBall.Tick += new EventHandler(BallAnimation);
+            timerBall.Start();
+
+            timerGolf_Club = new DispatcherTimer();
+            timerGolf_Club.Interval = TimeSpan.FromMilliseconds(200);
+            timerGolf_Club.Tick += new EventHandler(Golf_Club_Animation);
+            timerGolf_Club.Start();
+
+
             m_scene.LoadScene();
             m_scene.Initialize();
+        }
+
+        private void BallAnimation(object sender, EventArgs e)
+        {
+            if (positionBall[0] + 0.4 < 0 && Golf_Club_Down) {
+                    positionBall[0] += 0.4f;
+                    positionBall[1] += 0.3f;
+            }
+            if (positionBall[0] + 0.4 > 0 && Golf_Club_Down)
+            {
+                positionBall[2] = -1f;
+            }
+
+        }
+
+        private void Golf_Club_Animation(object sender, EventArgs e)
+        {
+            if (!Golf_Club_Up)
+            {
+                positionGolf_Club[0] -= 3;
+                positionGolf_Club[1] -= 3.5f;
+                positionGolf_Club[2] += 1.4f;
+                rotationGolf_Club[1] += 10;
+                if (positionGolf_Club[0] == -20)
+                {
+                    Golf_Club_Up = true;
+                }
+            }
+            else{
+                if (!Golf_Club_Down)
+                {
+                    positionGolf_Club[0] += 3;
+                    positionGolf_Club[1] += 3.5f;
+                    positionGolf_Club[2] -= 1.4f;
+                    rotationGolf_Club[1] -= 10;
+                }
+                if (positionGolf_Club[0] == -14)
+                {
+                    Golf_Club_Down = true;
+                }
+            }
+            
+
         }
 
         private void SetupLighting(OpenGL gl)
@@ -197,9 +266,19 @@ namespace AssimpSample
 
             gl.PushMatrix();
 
-            gl.Translate(0.0f, 0.0f, -m_sceneDistance*1.3);
+            /*gl.PushMatrix();
+            Grid grid = new Grid();
+            gl.Translate(0f, -1f, -10f);
+            gl.Rotate(90f, 0f, 0f);
+            grid.Render(gl, SharpGL.SceneGraph.Core.RenderMode.Design);
+            gl.PopMatrix();*/
+            //gl.LoadIdentity();
+
+            //Pitati vezano za LookAt da li se odnosi na to da gleda direktno iznad rupe 
+            //gl.LookAt(0, 20, -40, 0, 0, -40, 0, 0, -1);
+            gl.Translate(0.0f, -7f, -m_sceneDistance*1.3);
             gl.Scale(0.5, 0.5, 0.5);
-            gl.Rotate(-40f,0f,0f);
+            gl.Rotate(-90f,0f,0f);
             gl.Rotate(m_xRotation, 1.0f, 0.0f, 0.0f);
             gl.Rotate(m_yRotation, 0.0f, 1.0f, 0.0f);
 
@@ -237,7 +316,11 @@ namespace AssimpSample
             {
                 m_scene.Dispose();
             }
+            timerBall.Stop();
+            timerGolf_Club.Stop();
+
         }
+
 
         #endregion Metode
 
@@ -263,10 +346,10 @@ namespace AssimpSample
             gl.Color(0.45f, 0.6f, 0.35f);
             gl.Begin(OpenGL.GL_QUADS);
             gl.Normal(0.0f, -1.0f, 0.0f);
-            gl.Vertex(-15.0f, 8.0f);
+            gl.Vertex(-15.0f, 15.0f);
             gl.Vertex(-50.0f, -25.0f);
             gl.Vertex(50f, -25.0f);
-            gl.Vertex(15.0f, 8.0f);
+            gl.Vertex(15.0f, 15.0f);
             gl.End();
 
             Hole(gl);
@@ -329,7 +412,7 @@ namespace AssimpSample
             
             gl.PushMatrix();
             gl.Color(0.8f, 0.8f, 0.1f);
-            gl.Translate(-9f,-7f,0.5f);
+            gl.Translate(positionBall[0], positionBall[1], positionBall[2]);
             gl.Rotate(90f, 0f, 0f);
             gl.Scale(0.5f, 0.5f, 0.5f);
             Sphere sp = new Sphere();
@@ -346,9 +429,18 @@ namespace AssimpSample
         {
             gl.PushMatrix();
 
-            gl.Translate(-14.0f, -10.0f,0.2f);
-            gl.Rotate(0f, 0f, -60f);
+            gl.Translate(positionGolf_Club[0], positionGolf_Club[1], positionGolf_Club[2]);
+            gl.Rotate(rotationGolf_Club[0], rotationGolf_Club[1], rotationGolf_Club[2]);
             gl.Scale(0.2f,0.35f,0.2f);
+
+
+            /*gl.Translate(-17.0f, -13.5f, 1.7f);
+            gl.Rotate(0f, 10f, -60f);
+            gl.Scale(0.2f, 0.35f, 0.2f);*/
+
+            /*gl.Translate(-20.0f, -17.0f, 3f);
+            gl.Rotate(0f, 20f, -60f);
+            gl.Scale(0.2f, 0.35f, 0.2f);*/
             m_scene.Draw();
 
             gl.PopMatrix();

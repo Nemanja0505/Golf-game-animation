@@ -90,7 +90,7 @@ namespace AssimpSample
             {
                 case Key.F2: this.Close(); break;
                 case Key.F:
-                    if (m_world.RotationX - 5 >= -35)
+                    if (m_world.RotationX - 5 >= -105)
                     {
                         m_world.RotationX -= 5.0f;
                     }
@@ -99,7 +99,7 @@ namespace AssimpSample
                     }
                      break;
                 case Key.S:
-                    if (m_world.RotationX + 5 <= 15)
+                    if (m_world.RotationX + 5 <= 105)
                     {
                         m_world.RotationX += 5.0f;
                     }
