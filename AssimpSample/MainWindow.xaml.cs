@@ -133,10 +133,29 @@ namespace AssimpSample
                         break;
                     case Key.OemPlus: m_world.SceneDistance -= 5.0f; break;
                     case Key.OemMinus: m_world.SceneDistance += 5.0f; break;
-                    case Key.V: m_world.RestartAnimation(); break;
+                    case Key.V:
+                        m_world.RestartAnimation();
+                        cbX.IsEnabled = false;
+                        cbY.IsEnabled = false;
+                        break;
                     case Key.O: m_world.ChangeShadeModel(openGLControl.OpenGL); break;
                 }
             }
         }
+
+        private void X_Change(object sender, SelectionChangedEventArgs e)
+        {
+            m_world.positionHole[0] = float.Parse(cbX.SelectedItem.ToString().Split(':')[1]);
+        }
+        private void Y_Change(object sender, SelectionChangedEventArgs e)
+        {
+            m_world.positionHole[1] = float.Parse(cbY.SelectedItem.ToString().Split(':')[1]);
+        }
+
+        public void Enable() {
+            cbX.IsEnabled = true;
+            cbY.IsEnabled = true;
+        }
+
     }
 }

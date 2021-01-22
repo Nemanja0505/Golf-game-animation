@@ -19,6 +19,7 @@ using System.Windows.Threading;
 using System.Threading;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Windows;
 
 namespace AssimpSample
 {
@@ -65,6 +66,7 @@ namespace AssimpSample
         ///	 Shade model 
         /// </summary>
         private ShadeModel m_selectedModel;
+        public float[] positionHole = { 0.0f, 0.0f, 0.025f };
 
 
         #endregion Atributi
@@ -103,7 +105,16 @@ namespace AssimpSample
                 rotationGolf_Club = new float[] { 0f, 0f, -60f };
                 Golf_Club_Up = false;
                 Golf_Club_Down = false;
+                Enable();
             }
+        }
+
+        public static void Enable() {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                var mainWindow = Application.Current.MainWindow as MainWindow;
+                mainWindow.Enable();
+            }));
         }
 
 
@@ -170,10 +181,10 @@ namespace AssimpSample
         #endregion
 
         #region Atributi za texture
-        private enum TextureObjects { Ground = 0,Ball,Flag,YellowPlastic};
+        private enum TextureObjects { Ground = 0,Ball,Flag,YellowPlastic,Hole};
         private readonly int m_textureCount = Enum.GetNames(typeof(TextureObjects)).Length;
         private uint[] m_textures = null;
-        private string[] m_textureFiles = { "..//..//Images//ground.jpg" , "..//..//Images//ball.jpg" , "..//..//Images//flag.jpg" , "..//..//Images//yellowPlastic.jpg" };
+        private string[] m_textureFiles = { "..//..//Images//ground.jpg" , "..//..//Images//ball.jpg" , "..//..//Images//flag.jpg" , "..//..//Images//yellowPlastic.jpg","..//..//Images//hole.jpg" };
         private OpenGL gl;
         #endregion
 
@@ -312,12 +323,12 @@ namespace AssimpSample
         private void SetupAnimation() {
 
             timerBall = new DispatcherTimer();
-            timerBall.Interval = TimeSpan.FromMilliseconds(100);
+            timerBall.Interval = TimeSpan.FromMilliseconds(50);
             timerBall.Tick += new EventHandler(BallAnimation);
             timerBall.Start();
 
             timerGolf_Club = new DispatcherTimer();
-            timerGolf_Club.Interval = TimeSpan.FromMilliseconds(200);
+            timerGolf_Club.Interval = TimeSpan.FromMilliseconds(100);
             timerGolf_Club.Tick += new EventHandler(Golf_Club_Animation);
             timerGolf_Club.Start();
 
@@ -466,23 +477,34 @@ namespace AssimpSample
             
 
             Hole(gl);
-            Bulk(gl);
             Ball(gl);
-
+            Bulk(gl);
+            
             gl.PopMatrix();
         }
 
         private void Hole(OpenGL gl) {
             gl.PushMatrix();
+
+            gl.PushMatrix();
+
+            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.Hole]);
+            gl.MatrixMode(OpenGL.GL_TEXTURE);
+            gl.LoadIdentity();
+            gl.Scale(20f, 20f, 20f);
+            gl.MatrixMode(OpenGL.GL_MODELVIEW);
+
             gl.Color(0f, 0f, 0f);
-            gl.Translate(0f, 0.0f, 0.015f);
+            gl.Translate(positionHole[0], positionHole[1], positionHole[2]);
             Disk disk = new Disk();
+            disk.TextureCoords = true;
             disk.NormalGeneration = Normals.Smooth;
             disk.Loops = 300;
             disk.Slices = 300;
             disk.OuterRadius = 0.7f;
             disk.CreateInContext(gl);
             disk.Render(gl, RenderMode.Render);
+            gl.PopMatrix();
             gl.PopMatrix();
         }
 
@@ -498,7 +520,7 @@ namespace AssimpSample
             gl.Scale(2f, 2f, 2f);
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
 
-            gl.Translate(0.4f, 0f, 0.02f);
+            gl.Translate(0.4f + positionHole[0], 0f + positionHole[1], 0.02f);
             gl.Color(1f, 1f, 1f);
             //gl.Rotate(-30f, 0f, 0f);
             Cylinder cil = new Cylinder();
@@ -535,11 +557,11 @@ namespace AssimpSample
             gl.Color(0.8f, 0.2f, 0.3f);
             gl.Begin(OpenGL.GL_TRIANGLES);
             gl.TexCoord(0.0f, 0.0f);
-            gl.Vertex(0.3f, 0.3f, 15f);
+            gl.Vertex(0.3f + positionHole[0], 0.3f + positionHole[1], 15f);
             gl.TexCoord(1.0f, 0.0f);
-            gl.Vertex(0.3f, 0.3f, 11f);
+            gl.Vertex(0.3f + + positionHole[0], 0.3f + positionHole[1], 11f);
             gl.TexCoord(0.5f, 1.0f);
-            gl.Vertex(2f, -2.0f, 13f);
+            gl.Vertex(2f + +positionHole[0], -2.0f + positionHole[1], 13f);
             gl.End();
             gl.PopMatrix();
             gl.PopMatrix();
@@ -605,7 +627,6 @@ namespace AssimpSample
         {
 
             //gl.Viewport(m_width/2, 0, m_width/2, m_height/2);
-
             gl.Color(1f, 0.0f, 0.0f);
             gl.MatrixMode(OpenGL.GL_PROJECTION);
             gl.LoadIdentity();
