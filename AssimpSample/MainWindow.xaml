@@ -6,7 +6,7 @@
     <Grid>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
+                <RowDefinition Height="20"/>
                 <RowDefinition Height="17*"/>
             </Grid.RowDefinitions>
 
@@ -32,11 +32,14 @@
                     </Grid>
 
                     <Grid Grid.Column="8">
-                        <ComboBox Name="cbY" SelectionChanged="Y_Change" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <ComboBox Name="cbY" SelectionChanged="Y_Change"  HorizontalAlignment="Stretch">
                             <ComboBoxItem >0.0</ComboBoxItem>
                             <ComboBoxItem >3.0</ComboBoxItem>
                             <ComboBoxItem >6.0</ComboBoxItem>
                             <ComboBoxItem >9.0</ComboBoxItem>
+                            <ComboBoxItem >12.0</ComboBoxItem>
+                            <ComboBoxItem >15.0</ComboBoxItem>
+                            <ComboBoxItem >18.0</ComboBoxItem>
                             <ComboBoxItem >-3.0</ComboBoxItem>
                             <ComboBoxItem >-6.0</ComboBoxItem>
                             <ComboBoxItem >-9.0</ComboBoxItem>
@@ -49,11 +52,14 @@
                         </TextBlock>
                     </Grid>
                     <Grid Grid.Column="6">
-                        <ComboBox Name="cbX" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectionChanged="X_Change">
+                        <ComboBox Name="cbX" VerticalAlignment="Stretch"  SelectionChanged="X_Change">
                             <ComboBoxItem >0.0</ComboBoxItem>
                             <ComboBoxItem >3.0</ComboBoxItem>
                             <ComboBoxItem >6.0</ComboBoxItem>
                             <ComboBoxItem >9.0</ComboBoxItem>
+                            <ComboBoxItem >12.0</ComboBoxItem>
+                            <ComboBoxItem >15.0</ComboBoxItem>
+                            <ComboBoxItem >18.0</ComboBoxItem>
                             <ComboBoxItem >-3.0</ComboBoxItem>
                             <ComboBoxItem >-6.0</ComboBoxItem>
                             <ComboBoxItem >-9.0</ComboBoxItem>
@@ -61,16 +67,47 @@
                     </Grid>
 
                     <Grid Grid.Column="4">
-                        <TextBlock VerticalAlignment="Stretch">
+                        <TextBlock VerticalAlignment="Stretch" HorizontalAlignment="Right">
                             <TextBlock.Text>Pozicija rupe</TextBlock.Text>
                         </TextBlock>
                     </Grid>
 
+                    <Grid Grid.Column="3">
+                        <ComboBox Name="CbScale"  HorizontalAlignment="Stretch" SelectionChanged="Scale_Change">
+                            <ComboBoxItem >0.3</ComboBoxItem>
+                            <ComboBoxItem >0.4</ComboBoxItem>
+                            <ComboBoxItem >0.5</ComboBoxItem>
+                            <ComboBoxItem >0.6</ComboBoxItem>
+                            <ComboBoxItem >0.7</ComboBoxItem>
+                            <ComboBoxItem >0.8</ComboBoxItem>
+                            <ComboBoxItem >0.9</ComboBoxItem>
+                            <ComboBoxItem >1.0</ComboBoxItem>
+                        </ComboBox>
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <ComboBox Name="CbDifuse"  HorizontalAlignment="Stretch" SelectionChanged="Difuse_Change">
+                            <ComboBoxItem >crvena</ComboBoxItem>
+                            <ComboBoxItem >plava</ComboBoxItem>
+                            <ComboBoxItem >zelena</ComboBoxItem>
+                        </ComboBox>
+                    </Grid>
+                    <Grid Grid.Column="2">
+                        <TextBlock VerticalAlignment="Stretch" HorizontalAlignment="Right">
+                            <TextBlock.Text>Skaliranje loptice</TextBlock.Text>
+                        </TextBlock>
+                    </Grid>
+
+                    <Grid Grid.Column="0">
+                        <TextBlock VerticalAlignment="Stretch" HorizontalAlignment="Right">
+                            <TextBlock.Text>Izbor difuzne komponente</TextBlock.Text>
+                        </TextBlock>
+                    </Grid>
                 </Grid>
 
 
-                
+
             </Grid>
+
             <Grid Grid.Row="1">
                 <sharpGL:OpenGLControl 
             Name="openGLControl" OpenGLDraw="openGLControl_OpenGLDraw" 

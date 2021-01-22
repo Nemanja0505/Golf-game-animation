@@ -66,8 +66,6 @@ namespace AssimpSample
         ///	 Shade model 
         /// </summary>
         private ShadeModel m_selectedModel;
-        public float[] positionHole = { 0.0f, 0.0f, 0.025f };
-
 
         #endregion Atributi
 
@@ -79,8 +77,14 @@ namespace AssimpSample
         private float[] positionBall = { -13f, -10f, 0.5f };
         private float[] positionGolf_Club = { -14f, -10f, 0.2f };
         private float[] rotationGolf_Club = { 0f, 0f, -60f };
+        
+        public float scaleBall = 0.5f;
+        public float[] positionHole = { 0.0f, 0.0f, 0.025f };
+        public float[] light0diffuse = new float[] { 0.3f, 0.3f, 0.3f, 1.0f };
+
         private bool Golf_Club_Up = false;
         private bool Golf_Club_Down = false;
+
 
         #endregion 
 
@@ -95,10 +99,9 @@ namespace AssimpSample
             if (!startAnimation)
             {
                 startAnimation = true;
-                
             }
             else {
-                Thread.Sleep(2000);
+                //Thread.Sleep(2000);
                 positionBall = new float[] { -13f, -10f, 0.5f };
                 startAnimation = false;
                 positionGolf_Club = new float[] { -14f, -10f, 0.2f };
@@ -125,23 +128,25 @@ namespace AssimpSample
         {
             if (startAnimation)
             {
-                if (positionBall[2] == -1f)
+                if (positionBall[2] < -5f)
                 {
                     RestartAnimation();
                 }
-                if (positionBall[0] < 0 && Golf_Club_Down)
-                {
-                    positionBall[0] += 0.5f;
-                    if (positionBall[1] < 0)
+                if (Golf_Club_Down) {
+                    if (positionBall[0] < positionHole[0])
                     {
-                        positionBall[1] += 0.4f;
+                        positionBall[0] += (float) (13 + positionHole[0])/20;
+                    }
+                    if (positionBall[1] < positionHole[1])
+                    {
+                        positionBall[1] += (float)(10 + positionHole[1]) /20;
+                    }
+                    if (positionBall[0] >= positionHole[0] && positionBall[1] >= positionHole[1])
+                    {
+                        positionBall[2] += -1f;
                     }
                 }
-                if (positionBall[0] == 0 && Golf_Club_Down)
-                {
-                    positionBall[2] = -1f;
-
-                }
+                
 
             }
 
@@ -279,7 +284,7 @@ namespace AssimpSample
         {
             gl.Enable(OpenGL.GL_CULL_FACE);
             gl.Enable(OpenGL.GL_DEPTH_TEST);
-            
+
             SetupLighting(gl);
             SetupAnimation();
             SetupTexture();
@@ -339,7 +344,6 @@ namespace AssimpSample
             //color tracking mehanizam
             gl.Enable(OpenGL.GL_COLOR_MATERIAL);
             gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);
-            gl.ClearColor(0.0f, 0.5f, 1.0f, 1.0f);
             //definisanje normale 
             gl.Enable(OpenGL.GL_NORMALIZE);
             gl.Enable(OpenGL.GL_AUTO_NORMAL);
@@ -349,8 +353,7 @@ namespace AssimpSample
             //tackasti izvor svetlosti stacionaran na y-osi iznad podloge
             float[] light0pos = new float[] { 0.0f, 5.0f, 0.0f, 1.0f };
             float[] light0ambient = new float[] { 0.5f, 0.5f, 0.5f, 1f };
-            float[] light0diffuse = new float[] { 0.3f, 0.3f, 0.3f, 1.0f };
-
+            
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, light0pos);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_AMBIENT, light0ambient);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, light0diffuse);
@@ -378,15 +381,15 @@ namespace AssimpSample
             gl.Rotate(90f, 0f, 0f);
             grid.Render(gl, SharpGL.SceneGraph.Core.RenderMode.Design);
             gl.PopMatrix();*/
-            //gl.LoadIdentity();
+            gl.LoadIdentity();
 
             //Pitati vezano za LookAt nista ne razumem kako funkcinise???
-            //gl.LookAt(0, 0, 0, 0, -7, -30*1.2, 0, 1, 0);
-            gl.Translate(0.0f, -7f, -m_sceneDistance*1.2);
+            gl.LookAt(0,10, 0, 0, -7, -30 * 1.2, 0, 1, 0);
+            gl.Translate(0.0f, -7f, -m_sceneDistance * 1.2);
             gl.Scale(0.5, 0.5, 0.5);
             gl.Rotate(-90f,0f,0f);
             gl.Rotate(m_xRotation, 1.0f, 0.0f, 0.0f);
-            gl.Rotate(m_yRotation, 0.0f, 1.0f, 0.0f);
+            gl.Rotate(m_yRotation, 0.0f, 0.0f, 1.0f);
 
             Ground(gl);
             Golf_Club(gl);
@@ -456,20 +459,20 @@ namespace AssimpSample
             gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.Ground]);
             gl.MatrixMode(OpenGL.GL_TEXTURE);
             gl.LoadIdentity();
-            gl.Scale(20f,20f,20f);
+            gl.Scale(10f,10f,10f);
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
             
            // gl.Color(0.0f, 0.0f, 0.0f);
             gl.Begin(OpenGL.GL_QUADS);
-            gl.Normal(0.0f, -1.0f, 0.0f);
+            gl.Normal(1.0f, 1.0f, 1.0f);
             gl.TexCoord(0.0f, 0.0f);
-            gl.Vertex(-15.0f, 15.0f);
+            gl.Vertex(-50.0f, 50.0f);
             gl.TexCoord(0.0f, 1.0f);
-            gl.Vertex(-50.0f, -25.0f);
-            gl.TexCoord(1.0f, 1.4f);
-            gl.Vertex(50f, -25.0f);
+            gl.Vertex(-50.0f, -50.0f);
+            gl.TexCoord(1.0f, 1.0f);
+            gl.Vertex(50f, -50.0f);
             gl.TexCoord(1.0f, 0.0f);
-            gl.Vertex(15.0f, 15.0f);
+            gl.Vertex(50.0f, 50.0f);
             gl.End();
 
             gl.PopMatrix();
@@ -557,11 +560,11 @@ namespace AssimpSample
             gl.Color(0.8f, 0.2f, 0.3f);
             gl.Begin(OpenGL.GL_TRIANGLES);
             gl.TexCoord(0.0f, 0.0f);
-            gl.Vertex(0.3f + positionHole[0], 0.3f + positionHole[1], 15f);
+            gl.Vertex(0.5f + positionHole[0], 0.3f + positionHole[1], 14.8f);
             gl.TexCoord(1.0f, 0.0f);
-            gl.Vertex(0.3f + + positionHole[0], 0.3f + positionHole[1], 11f);
+            gl.Vertex(0.5f + + positionHole[0], 0.3f + positionHole[1], 10.8f);
             gl.TexCoord(0.5f, 1.0f);
-            gl.Vertex(2f + +positionHole[0], -2.0f + positionHole[1], 13f);
+            gl.Vertex(2f + +positionHole[0], -2.0f + positionHole[1], 13.8f);
             gl.End();
             gl.PopMatrix();
             gl.PopMatrix();
@@ -583,7 +586,7 @@ namespace AssimpSample
             gl.Color(0.8f, 0.8f, 0.1f);
             gl.Translate(positionBall[0], positionBall[1], positionBall[2]);
             gl.Rotate(90f, 0f, 0f);
-            gl.Scale(0.5f, 0.5f, 0.5f);
+            gl.Scale(scaleBall, scaleBall, scaleBall);
             Sphere sp = new Sphere();
             sp.TextureCoords = true;
             sp.NormalGeneration = Normals.Smooth;

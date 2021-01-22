@@ -92,7 +92,7 @@ namespace AssimpSample
                 {
                     case Key.F2: this.Close(); break;
                     case Key.E:
-                        if (m_world.RotationX - 5 >= -10)
+                        if (m_world.RotationX - 5 >= -100)
                         {
                             m_world.RotationX -= 5.0f;
                         }
@@ -102,7 +102,7 @@ namespace AssimpSample
                         }
                         break;
                     case Key.D:
-                        if (m_world.RotationX + 5 <= 60)
+                        if (m_world.RotationX + 5 <= 100)
                         {
                             m_world.RotationX += 5.0f;
                         }
@@ -112,7 +112,7 @@ namespace AssimpSample
                         }
                         break;
                     case Key.F:
-                        if (m_world.RotationY - 5 >= -35)
+                        if (m_world.RotationY - 5 >= -105)
                         {
                             m_world.RotationY -= 5.0f;
                         }
@@ -122,7 +122,7 @@ namespace AssimpSample
                         }
                         break;
                     case Key.S:
-                        if (m_world.RotationY + 5 <= 35)
+                        if (m_world.RotationY + 5 <= 105)
                         {
                             m_world.RotationY += 5.0f;
                         }
@@ -137,6 +137,8 @@ namespace AssimpSample
                         m_world.RestartAnimation();
                         cbX.IsEnabled = false;
                         cbY.IsEnabled = false;
+                        CbScale.IsEnabled = false;
+                        CbDifuse.IsEnabled = false;
                         break;
                     case Key.O: m_world.ChangeShadeModel(openGLControl.OpenGL); break;
                 }
@@ -155,7 +157,34 @@ namespace AssimpSample
         public void Enable() {
             cbX.IsEnabled = true;
             cbY.IsEnabled = true;
+            CbScale.IsEnabled = true;
+            CbDifuse.IsEnabled = true;
         }
 
+        private void Scale_Change(object sender, SelectionChangedEventArgs e)
+        {
+            m_world.scaleBall = float.Parse(CbScale.SelectedItem.ToString().Split(':')[1]);
+        }
+
+        private void Difuse_Change(object sender, SelectionChangedEventArgs e)
+        {
+            if (CbDifuse.SelectedItem.ToString().Split(':')[1].Equals("crvena"))
+            {
+                m_world.light0diffuse[0] = 1f;
+                m_world.light0diffuse[1] = 0f;
+                m_world.light0diffuse[2] = 0f;
+            }
+            else if (CbDifuse.SelectedItem.ToString().Split(':')[1].Equals("plava"))
+            {
+                m_world.light0diffuse[0] = 0f;
+                m_world.light0diffuse[1] = 0f;
+                m_world.light0diffuse[2] = 1f;
+            }
+            else {
+                m_world.light0diffuse[0] = 0f;
+                m_world.light0diffuse[1] = 1f;
+                m_world.light0diffuse[2] = 0f;
+            }
+        }
     }
 }
