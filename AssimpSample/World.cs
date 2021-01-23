@@ -74,9 +74,10 @@ namespace AssimpSample
         private DispatcherTimer timerGolf_Club;
         private bool startAnimation = false;
 
-        private float[] positionBall = { -13f, -10f, 0.5f };
-        private float[] positionGolf_Club = { -14f, -10f, 0.2f };
+        public float[] positionBall = { -12.2f, -11f, 0.5f };
+        public float[] positionGolf_Club = { -14f, -10f, 0.2f };
         private float[] rotationGolf_Club = { 0f, 0f, -60f };
+        public int counter = 0; 
         
         public float scaleBall = 0.5f;
         public float[] positionHole = { 0.0f, 0.0f, 0.025f };
@@ -102,12 +103,14 @@ namespace AssimpSample
             }
             else {
                 //Thread.Sleep(2000);
-                positionBall = new float[] { -13f, -10f, 0.5f };
+                positionBall = new float[] { -12.2f, -11f, 0.5f };
                 startAnimation = false;
-                positionGolf_Club = new float[] { -14f, -10f, 0.2f };
+                positionGolf_Club = new float[] { -13f - scaleBall, -10f - scaleBall, 0.2f };
                 rotationGolf_Club = new float[] { 0f, 0f, -60f };
+                positionBall[2] = scaleBall;
                 Golf_Club_Up = false;
                 Golf_Club_Down = false;
+                counter = 0;
                 Enable();
             }
         }
@@ -128,25 +131,25 @@ namespace AssimpSample
         {
             if (startAnimation)
             {
-                if (positionBall[2] < -5f)
+                if (positionBall[2] < -10000f)
                 {
                     RestartAnimation();
                 }
                 if (Golf_Club_Down) {
                     if (positionBall[0] < positionHole[0])
                     {
-                        positionBall[0] += (float) (13 + positionHole[0])/20;
+                        positionBall[0] += (float) (12.2 + positionHole[0])/20;
                     }
                     if (positionBall[1] < positionHole[1])
                     {
-                        positionBall[1] += (float)(10 + positionHole[1]) /20;
+                        positionBall[1] += (float)(11 + positionHole[1]) /20;
                     }
                     if (positionBall[0] >= positionHole[0] && positionBall[1] >= positionHole[1])
                     {
-                        positionBall[2] += -1f;
+                        positionBall[2] += -2000f;
                     }
-                }
-                
+                }                
+
 
             }
 
@@ -157,29 +160,37 @@ namespace AssimpSample
             if (startAnimation)
             {
                 if (!Golf_Club_Up)
-                {
-                    positionGolf_Club[0] -= 3;
-                    positionGolf_Club[1] -= 3.5f;
-                    positionGolf_Club[2] += 1.4f;
-                    rotationGolf_Club[1] += 10;
-                    if (positionGolf_Club[0] == -23)
+                    {
+                    if (counter == 2)
                     {
                         Golf_Club_Up = true;
                     }
+                    else {
+                        positionGolf_Club[0] -= 3;
+                        positionGolf_Club[1] -= 3.5f;
+                        positionGolf_Club[2] += 1.4f;
+                        rotationGolf_Club[1] += 10;
+                        counter++;
+                    }
+
+
                 }
                 else
                 {
+                    if (counter == 4)
+                    {
+                        Golf_Club_Down = true;
+                    }
+
                     if (!Golf_Club_Down)
                     {
                         positionGolf_Club[0] += 3;
                         positionGolf_Club[1] += 3.5f;
                         positionGolf_Club[2] -= 1.4f;
                         rotationGolf_Club[1] -= 10;
+                        counter++;
                     }
-                    if (positionGolf_Club[0] == -14)
-                    {
-                        Golf_Club_Down = true;
-                    }
+
                 }
             }
         }
@@ -285,7 +296,6 @@ namespace AssimpSample
             gl.Enable(OpenGL.GL_CULL_FACE);
             gl.Enable(OpenGL.GL_DEPTH_TEST);
 
-            SetupLighting(gl);
             SetupAnimation();
             SetupTexture();
 
@@ -296,7 +306,7 @@ namespace AssimpSample
         private void SetupTexture() {
 
             gl.Enable(OpenGL.GL_TEXTURE_2D);
-            gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_REPLACE);
+            gl.TexEnv(OpenGL.GL_TEXTURE_ENV, OpenGL.GL_TEXTURE_ENV_MODE, OpenGL.GL_MODULATE);
 
             // Ucitaj slike i kreiraj teksture
             gl.GenTextures(m_textureCount, m_textures);
@@ -344,21 +354,30 @@ namespace AssimpSample
             //color tracking mehanizam
             gl.Enable(OpenGL.GL_COLOR_MATERIAL);
             gl.ColorMaterial(OpenGL.GL_FRONT, OpenGL.GL_AMBIENT_AND_DIFFUSE);
+            gl.ClearColor(0.3f, 0.2f, 0.05f, 1.0f);
             //definisanje normale 
             gl.Enable(OpenGL.GL_NORMALIZE);
             gl.Enable(OpenGL.GL_AUTO_NORMAL);
             //shade model 
             gl.ShadeModel(OpenGL.GL_SMOOTH);
 
+            float[] global_ambient = new float[] { 0.3f, 0.3f, 0.2f, 0.0f };
+            gl.LightModel(OpenGL.GL_LIGHT_MODEL_AMBIENT, global_ambient);
+
             //tackasti izvor svetlosti stacionaran na y-osi iznad podloge
-            float[] light0pos = new float[] { 0.0f, 5.0f, 0.0f, 1.0f };
+            float[] light0pos = new float[] {0f, 5f, -10f, 0.0f };
             float[] light0ambient = new float[] { 0.5f, 0.5f, 0.5f, 1f };
-            
+            float[] light0specular = new float[] { 1f, 1f, 1f, 1.0f };
+
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, light0pos);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_AMBIENT, light0ambient);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, light0diffuse);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, light0specular);
 
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPOT_CUTOFF, 180.0f);
+
+            gl.Material(OpenGL.GL_FRONT, OpenGL.GL_SPECULAR, light0specular);
+            gl.Material(OpenGL.GL_FRONT, OpenGL.GL_SHININESS, 70.0f);
 
             gl.Enable(OpenGL.GL_LIGHTING);
             gl.Enable(OpenGL.GL_LIGHT0);
@@ -375,17 +394,10 @@ namespace AssimpSample
 
             gl.PushMatrix();
 
-            /*gl.PushMatrix();
-            Grid grid = new Grid();
-            gl.Translate(0f, -1f, -10f);
-            gl.Rotate(90f, 0f, 0f);
-            grid.Render(gl, SharpGL.SceneGraph.Core.RenderMode.Design);
-            gl.PopMatrix();*/
-            gl.LoadIdentity();
+            SetupLighting(gl);
+            gl.LookAt(0, 10, 0, 0, -7, -30*0.8, 0, 1, 0);
 
-            //Pitati vezano za LookAt nista ne razumem kako funkcinise???
-            gl.LookAt(0,10, 0, 0, -7, -30 * 1.2, 0, 1, 0);
-            gl.Translate(0.0f, -7f, -m_sceneDistance * 1.2);
+            gl.Translate(0.0f, -7f, -m_sceneDistance*0.8);
             gl.Scale(0.5, 0.5, 0.5);
             gl.Rotate(-90f,0f,0f);
             gl.Rotate(m_xRotation, 1.0f, 0.0f, 0.0f);
@@ -393,7 +405,8 @@ namespace AssimpSample
 
             Ground(gl);
             Golf_Club(gl);
-
+           
+           
             gl.PopMatrix();
 
             drawText(gl);
@@ -452,19 +465,20 @@ namespace AssimpSample
         private void Ground(OpenGL gl) {
 
             gl.PushMatrix();
-            
-           
+
+
             gl.PushMatrix();
 
-            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.Ground]);
             gl.MatrixMode(OpenGL.GL_TEXTURE);
             gl.LoadIdentity();
             gl.Scale(10f,10f,10f);
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
-            
-           // gl.Color(0.0f, 0.0f, 0.0f);
+            gl.PopMatrix();
+
+            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.Ground]);
+            gl.Color(0f, 1f, 0f);
             gl.Begin(OpenGL.GL_QUADS);
-            gl.Normal(1.0f, 1.0f, 1.0f);
+            gl.Normal(0.0f, 0.0f, 1.0f);
             gl.TexCoord(0.0f, 0.0f);
             gl.Vertex(-50.0f, 50.0f);
             gl.TexCoord(0.0f, 1.0f);
@@ -475,9 +489,6 @@ namespace AssimpSample
             gl.Vertex(50.0f, 50.0f);
             gl.End();
 
-            gl.PopMatrix();
-
-            
 
             Hole(gl);
             Ball(gl);
@@ -491,13 +502,13 @@ namespace AssimpSample
 
             gl.PushMatrix();
 
-            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.Hole]);
             gl.MatrixMode(OpenGL.GL_TEXTURE);
             gl.LoadIdentity();
             gl.Scale(20f, 20f, 20f);
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
+            gl.PopMatrix();
 
-            gl.Color(0f, 0f, 0f);
+            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.Hole]);
             gl.Translate(positionHole[0], positionHole[1], positionHole[2]);
             Disk disk = new Disk();
             disk.TextureCoords = true;
@@ -508,7 +519,6 @@ namespace AssimpSample
             disk.CreateInContext(gl);
             disk.Render(gl, RenderMode.Render);
             gl.PopMatrix();
-            gl.PopMatrix();
         }
 
         private void Bulk(OpenGL gl) {
@@ -517,15 +527,18 @@ namespace AssimpSample
 
             gl.PushMatrix();
 
-            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.YellowPlastic]);
+            gl.PushMatrix();
             gl.MatrixMode(OpenGL.GL_TEXTURE);
             gl.LoadIdentity();
             gl.Scale(2f, 2f, 2f);
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
 
+            gl.PopMatrix();
+
+            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.YellowPlastic]);
+            
             gl.Translate(0.4f + positionHole[0], 0f + positionHole[1], 0.02f);
-            gl.Color(1f, 1f, 1f);
-            //gl.Rotate(-30f, 0f, 0f);
+            gl.Color(1f, 1f, 0.1f);
             Cylinder cil = new Cylinder();
             cil.TextureCoords = true;
             cil.NormalGeneration = Normals.Smooth;
@@ -545,29 +558,31 @@ namespace AssimpSample
         }
 
         private void Flag(OpenGL gl) {
-            
-            gl.PushMatrix();
+
 
             gl.PushMatrix();
 
-            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.Flag]);
+            gl.PushMatrix();
             gl.MatrixMode(OpenGL.GL_TEXTURE);
             gl.LoadIdentity();
-            gl.Scale(20f, 20f, 20f);
+            gl.Scale(1f, 1f, 1f);
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
 
+            gl.PopMatrix();
 
+            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.Flag]);
+            
             gl.Color(0.8f, 0.2f, 0.3f);
             gl.Begin(OpenGL.GL_TRIANGLES);
             gl.TexCoord(0.0f, 0.0f);
             gl.Vertex(0.5f + positionHole[0], 0.3f + positionHole[1], 14.8f);
             gl.TexCoord(1.0f, 0.0f);
-            gl.Vertex(0.5f + + positionHole[0], 0.3f + positionHole[1], 10.8f);
+            gl.Vertex(0.5f + positionHole[0], 0.3f + positionHole[1], 10.8f);
             gl.TexCoord(0.5f, 1.0f);
-            gl.Vertex(2f + +positionHole[0], -2.0f + positionHole[1], 13.8f);
+            gl.Vertex(2f + positionHole[0], -2.0f + positionHole[1], 13.8f);
             gl.End();
             gl.PopMatrix();
-            gl.PopMatrix();
+
 
         }
 
@@ -576,19 +591,23 @@ namespace AssimpSample
             gl.PushMatrix();
 
             gl.PushMatrix();
-            
-            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.Ball]);
             gl.MatrixMode(OpenGL.GL_TEXTURE);
             gl.LoadIdentity();
-            gl.Scale(10f,10f,10f);
+            gl.Scale(0.8f,0.8f,0.8f);
             gl.MatrixMode(OpenGL.GL_MODELVIEW);
+            gl.PopMatrix();
+
+
+            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.Ball]);
             
-            gl.Color(0.8f, 0.8f, 0.1f);
+            
+            gl.Color(1.0f, 1.0f, 1.0f);
             gl.Translate(positionBall[0], positionBall[1], positionBall[2]);
             gl.Rotate(90f, 0f, 0f);
             gl.Scale(scaleBall, scaleBall, scaleBall);
             Sphere sp = new Sphere();
             sp.TextureCoords = true;
+            sp.Radius = 1f;
             sp.NormalGeneration = Normals.Smooth;
             sp.Slices = 300;
             sp.Stacks = 300;
@@ -597,29 +616,22 @@ namespace AssimpSample
 
             gl.PopMatrix();
 
-            gl.PopMatrix();
-
         }
 
         private void Golf_Club(OpenGL gl)
         {
-            gl.PushMatrix();
 
+            gl.PushMatrix();
+            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.Ball]);
+            gl.Color(0.3f, 0.3f, 0.3f);
             gl.Translate(positionGolf_Club[0], positionGolf_Club[1], positionGolf_Club[2]);
             gl.Rotate(rotationGolf_Club[0], rotationGolf_Club[1], rotationGolf_Club[2]);
             gl.Scale(0.2f,0.35f,0.2f);
-
-
-            /*gl.Translate(-17.0f, -13.5f, 1.7f);
-            gl.Rotate(0f, 10f, -60f);
-            gl.Scale(0.2f, 0.35f, 0.2f);*/
-
-            /*gl.Translate(-20.0f, -17.0f, 3f);
-            gl.Rotate(0f, 20f, -60f);
-            gl.Scale(0.2f, 0.35f, 0.2f);*/
+            
             m_scene.Draw();
-
             gl.PopMatrix();
+
+
         }
 
 
@@ -630,6 +642,7 @@ namespace AssimpSample
         {
 
             //gl.Viewport(m_width/2, 0, m_width/2, m_height/2);
+            gl.BindTexture(OpenGL.GL_TEXTURE_2D, m_textures[(int)TextureObjects.Flag]);
             gl.Color(1f, 0.0f, 0.0f);
             gl.MatrixMode(OpenGL.GL_PROJECTION);
             gl.LoadIdentity();

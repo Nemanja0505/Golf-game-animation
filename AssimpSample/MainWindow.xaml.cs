@@ -92,7 +92,7 @@ namespace AssimpSample
                 {
                     case Key.F2: this.Close(); break;
                     case Key.E:
-                        if (m_world.RotationX - 5 >= -100)
+                        if (m_world.RotationX - 5 >= -20)
                         {
                             m_world.RotationX -= 5.0f;
                         }
@@ -102,7 +102,7 @@ namespace AssimpSample
                         }
                         break;
                     case Key.D:
-                        if (m_world.RotationX + 5 <= 100)
+                        if (m_world.RotationX + 5 <= 20)
                         {
                             m_world.RotationX += 5.0f;
                         }
@@ -112,7 +112,7 @@ namespace AssimpSample
                         }
                         break;
                     case Key.F:
-                        if (m_world.RotationY - 5 >= -105)
+                        if (m_world.RotationY - 5 >= -40)
                         {
                             m_world.RotationY -= 5.0f;
                         }
@@ -122,7 +122,7 @@ namespace AssimpSample
                         }
                         break;
                     case Key.S:
-                        if (m_world.RotationY + 5 <= 105)
+                        if (m_world.RotationY + 5 <= 130)
                         {
                             m_world.RotationY += 5.0f;
                         }
@@ -131,14 +131,29 @@ namespace AssimpSample
                             m_world.RotationY = m_world.RotationY;
                         }
                         break;
-                    case Key.OemPlus: m_world.SceneDistance -= 5.0f; break;
-                    case Key.OemMinus: m_world.SceneDistance += 5.0f; break;
+                    case Key.OemPlus:
+                        if (m_world.SceneDistance > 0) {
+                            m_world.SceneDistance -= 1.0f;
+                        }
+                        break;
+                    case Key.OemMinus:
+                        if (m_world.SceneDistance < 35)
+                        {
+                            m_world.SceneDistance += 1.0f;
+                        }
+                        break;
                     case Key.V:
                         m_world.RestartAnimation();
                         cbX.IsEnabled = false;
                         cbY.IsEnabled = false;
-                        CbScale.IsEnabled = false;
-                        CbDifuse.IsEnabled = false;
+                        btnScaleMinus.IsEnabled = false;
+                        btnScalePlus.IsEnabled = false;
+                        Xplus.IsEnabled = false;
+                        Xminus.IsEnabled = false;
+                        Yplus.IsEnabled = false;
+                        Yminus.IsEnabled = false;
+                        Zplus.IsEnabled = false;
+                        Zminus.IsEnabled = false;
                         break;
                     case Key.O: m_world.ChangeShadeModel(openGLControl.OpenGL); break;
                 }
@@ -157,34 +172,67 @@ namespace AssimpSample
         public void Enable() {
             cbX.IsEnabled = true;
             cbY.IsEnabled = true;
-            CbScale.IsEnabled = true;
-            CbDifuse.IsEnabled = true;
+            btnScaleMinus.IsEnabled = true;
+            btnScalePlus.IsEnabled = true;
+            Xplus.IsEnabled = true;
+            Xminus.IsEnabled = true;
+            Yplus.IsEnabled = true;
+            Yminus.IsEnabled = true;
+            Zplus.IsEnabled = true;
+            Zminus.IsEnabled = true;
         }
 
-        private void Scale_Change(object sender, SelectionChangedEventArgs e)
-        {
-            m_world.scaleBall = float.Parse(CbScale.SelectedItem.ToString().Split(':')[1]);
+
+		private void btnScalePlus_Click(object sender, RoutedEventArgs e)
+		{
+             if (m_world.scaleBall < 2.0) {
+                m_world.scaleBall += 0.1f;
+                m_world.positionGolf_Club[0] = -13f - m_world.scaleBall;
+                m_world.positionGolf_Club[1] = -10.2f - m_world.scaleBall;
+                m_world.positionBall[2] += 0.1f;
+            
+             }
         }
 
-        private void Difuse_Change(object sender, SelectionChangedEventArgs e)
+		private void btnScaleMinus_Click(object sender, RoutedEventArgs e)
+		{
+         if (m_world.scaleBall > 0.4)
+         {
+            m_world.scaleBall -= 0.1f;
+            m_world.positionGolf_Club[0] = -13f - m_world.scaleBall;
+            m_world.positionGolf_Club[1] = -10.2f - m_world.scaleBall;
+            m_world.positionBall[2] -= 0.1f;
+         }
+      }
+
+        private void Xplus_Click(object sender, RoutedEventArgs e)
         {
-            if (CbDifuse.SelectedItem.ToString().Split(':')[1].Equals("crvena"))
-            {
-                m_world.light0diffuse[0] = 1f;
-                m_world.light0diffuse[1] = 0f;
-                m_world.light0diffuse[2] = 0f;
-            }
-            else if (CbDifuse.SelectedItem.ToString().Split(':')[1].Equals("plava"))
-            {
-                m_world.light0diffuse[0] = 0f;
-                m_world.light0diffuse[1] = 0f;
-                m_world.light0diffuse[2] = 1f;
-            }
-            else {
-                m_world.light0diffuse[0] = 0f;
-                m_world.light0diffuse[1] = 1f;
-                m_world.light0diffuse[2] = 0f;
-            }
+            m_world.light0diffuse[0] += 0.5f;
+        }
+
+        private void Xminus_Click(object sender, RoutedEventArgs e)
+        {
+            m_world.light0diffuse[0] -= 0.5f;
+        }
+
+        private void Yminus_Click(object sender, RoutedEventArgs e)
+        {
+            m_world.light0diffuse[1] -= 0.5f;
+        }
+
+        private void Zminus_Click(object sender, RoutedEventArgs e)
+        {
+            m_world.light0diffuse[2] -= 0.5f;
+        }
+
+        private void Zplus_Click(object sender, RoutedEventArgs e)
+        {
+            m_world.light0diffuse[2] += 0.5f;
+        }
+
+        private void Yplus_Click(object sender, RoutedEventArgs e)
+        {
+            m_world.light0diffuse[1] += 0.5f;
         }
     }
 }
